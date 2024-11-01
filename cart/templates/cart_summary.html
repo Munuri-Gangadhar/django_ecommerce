@@ -81,14 +81,20 @@
                 Update
               </button>
              
+              <button type="button" data-index="{{product.id}}" class="btn btn-danger delete-product">
+                Remove
+              </button>
             </center>
             </div>
           </div>
         </div>
       </div>
                 {% endfor %}
+                <h3>Total: ${{totals}}</h3>
+
+                <br/><br/><br/>
                 {% else %}
-                There is Nothing in your cart
+             
 
                 {% endif %}
 
@@ -114,7 +120,7 @@
               var productid = $(this).data('index');
               var productQty = $('#select' + productid).find("option:selected").val();
         
-              console.log("Selected Quantity:", productQty);  // Debugging line
+         
         
               $.ajax({
                   type: 'POST',
@@ -135,6 +141,33 @@
           });
         </script>
         
+
+        <!-- Delete the product -->
+        <script>
+          $(document).on('click', '.delete-product', function(e) {
+              e.preventDefault();
+              
+              // Retrieve the product ID and selected quantity
+              var productid = $(this).data('index');
+        
+        
+              $.ajax({
+                  type: 'POST',
+                  url: '{% url "cart_delete" %}',
+                  data: {
+                      product_id: productid,
+                      csrfmiddlewaretoken: '{{ csrf_token }}',
+                      action: 'post'
+                  },
+                  success: function(json) {
+                      location.reload();
+                  },
+                  error: function(xhr, errmsg, err) {
+                      console.error("An error occurred: ", errmsg);
+                  }
+              });
+          });
+        </script>
    
 
    {% endblock %}
