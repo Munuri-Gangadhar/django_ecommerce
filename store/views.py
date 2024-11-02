@@ -8,6 +8,8 @@ from django import forms
 from . forms import SignUpForm,UpdateUserForm,ChangePasswordForm,UserInfoForm
 from django.db.models import Q 
 import json
+from payment.forms import ShippingForm
+from payment.models import ShippingAddress
 from cart.cart import Cart
 
 def product(request,pk):
@@ -143,17 +145,25 @@ def update_password(request):
 
 def update_info(request):
     if request.user.is_authenticated:
-        current_user=Profile.objects.get(user__id=request.user.id)
-        form=UserInfoForm(request.POST or None,instance=current_user)
+        current_user = Profile.objects.get(user__id=request.user.id)
+        shipping_user = ShippingAddress.objects.filter(user=request.user).first()  # Use filter().first()
 
-        if form.is_valid():
+        # If there's no shipping address, create a new one or handle accordingly
+        if shipping_user is None:
+            shipping_user = ShippingAddress(user=request.user)  # Create a new instance
+
+        form = UserInfoForm(request.POST or None, instance=current_user)
+        shipping_form = ShippingForm(request.POST or None, instance=shipping_user)
+
+        if form.is_valid() or shipping_form.is_valid():  # Validate both forms
             form.save()
-            messages.success(request,"User Info Has Been Updated")
+            shipping_form.save()  # Don't forget to save shipping form
+            messages.success(request, "User Info Has Been Updated")
             return redirect('home')
-        return render(request,"update_info.html",{'form':form})
-    
+        return render(request, "update_info.html", {'form': form, 'shipping_form': shipping_form})
+
     else:
-        messages.success(request,"You Must be logged in to Updated")
+        messages.error(request, "You must be logged in to update")
         return redirect('home')
 
 
