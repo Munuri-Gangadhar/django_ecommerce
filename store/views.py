@@ -6,9 +6,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from . forms import SignUpForm,UpdateUserForm,ChangePasswordForm,UserInfoForm
-
-
-
+from django.db.models import Q 
+import json
+from cart.cart import Cart
 
 def product(request,pk):
     product=Product.objects.get(id=pk)
@@ -47,6 +47,21 @@ def login_user(request):
         user=authenticate(request,username=username,password=password)
         if user is not None:
             login(request,user)
+            
+
+            current_user=Profile.objects.get(user__id=request.user.id)
+            saved_cart=current_user.old_cart
+            
+            if saved_cart:
+                converted_cart=json.loads(saved_cart)
+
+                cart=Cart(request)
+                
+                for key,value in converted_cart.items():
+                    cart.db_add(product=key,quantity=value)
+
+
+
             messages.success(request,("You have been Logged In!"))
             return redirect('home')
         else:
@@ -143,4 +158,13 @@ def update_info(request):
 
 
 def search(request):
-    pass
+    if request.method=="POST":
+        searched=request.POST['searched']
+        searched=Product.objects.filter(Q(name__icontains=searched)| Q(description__icontains=searched) )
+        if not searched:
+            messages.success(request,"That Product does not exist")
+            return render(request,"search.html",{})
+        else:
+            return render(request,"search.html",{'searched':searched})
+    else:
+        return render(request,'search.html',{})
