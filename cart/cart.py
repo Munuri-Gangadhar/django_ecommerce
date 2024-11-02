@@ -104,8 +104,7 @@ class Cart():
 
             carty=str(self.cart)
             carty=carty.replace("\'","\"")
-            current_user.update(old_cart=str(carty))
-        
+            current_user.update(old_cart=str(carty))     
         thing=self.cart
         return thing
     
