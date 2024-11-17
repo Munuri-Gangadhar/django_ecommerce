@@ -12,10 +12,10 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
-
+from dotenv import load_dotenv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+load_dotenv()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -26,7 +26,8 @@ SECRET_KEY = 'django-insecure-=*-@4u&o7bi8@c1&21s=(fg-ksqytsmkoa#f*_sxnfvfn+gq6n
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [".onrender.com"]
+CSRF_TRUSTED_ORIGINS=[]
 
 
 # Application definition
@@ -41,6 +42,7 @@ INSTALLED_APPS = [
     'store',
     'cart',
     'payment',
+    'whitenoise.runserver_nostatic'
     
 ]
 
@@ -52,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'ecom.urls'
@@ -88,11 +91,11 @@ DATABASES = {
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME':,
-#         'USER':,
-#         'PASSWORD':,
-#         'HOST':,
-#         'PORT'
+#         'NAME':'railway',
+#         'USER':'postgres',
+#         'PASSWORD':os.environ.get('DB_PASSWORD_YO'),
+#         'HOST': 'postgres.railway.internal', 
+#         'PORT': '5432',
 #     }
 # }
 
@@ -133,6 +136,16 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS=['static/']
+
+# STORAGES = {
+#     # ...
+#     "staticfiles": {
+#         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+#     },
+# }
+
+STATICFILES_STORAGE='whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATIC_ROOT=BASE_DIR / 'staticfiles'
 
 MEDIA_URL='media/'
 MEDIA_ROOT=os.path.join(BASE_DIR,'media')
