@@ -26,8 +26,9 @@ SECRET_KEY = 'django-insecure-=*-@4u&o7bi8@c1&21s=(fg-ksqytsmkoa#f*_sxnfvfn+gq6n
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [".onrender.com"]
-CSRF_TRUSTED_ORIGINS=[]
+ALLOWED_HOSTS = ["*.onrender.com", "localhost", "127.0.0.1"]
+CSRF_TRUSTED_ORIGINS = ["https://*.onrender.com"]
+
 
 
 # Application definition
@@ -82,22 +83,24 @@ WSGI_APPLICATION = 'ecom.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME':'railway',
-#         'USER':'postgres',
-#         'PASSWORD':os.environ.get('DB_PASSWORD_YO'),
-#         'HOST': 'postgres.railway.internal', 
-#         'PORT': '5432',
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'railway',
+        'USER': 'postgres',
+        'PASSWORD': os.environ.get('DB_PASSWORD_YO'),
+        'HOST': 'postgres.railway.internal',
+        'PORT': '5432',
+    }
+}
+
 
 
 # Password validation
@@ -135,7 +138,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
-STATICFILES_DIRS=['static/']
+# STATICFILES_DIRS=['static/']
+STATICFILES_DIRS = [BASE_DIR / 'ecom' / 'static']
+
 
 # STORAGES = {
 #     # ...
@@ -145,7 +150,8 @@ STATICFILES_DIRS=['static/']
 # }
 
 STATICFILES_STORAGE='whitenoise.storage.CompressedManifestStaticFilesStorage'
-STATIC_ROOT=BASE_DIR / 'staticfiles'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 
 MEDIA_URL='media/'
 MEDIA_ROOT=os.path.join(BASE_DIR,'media')
